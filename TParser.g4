@@ -163,7 +163,7 @@ blockitem   : decl SEMICOLON
             | stmt
             ;
 
-block       : LCB blockitem* RCB
+block       : LC blockitem* RC
             ;
 stmt        : lval ASSIGN expr SEMICOLON
             | expr SEMICOLON

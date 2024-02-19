@@ -19,8 +19,12 @@
 using namespace antlrcpptest;
 using namespace antlr4;
 
-int main(int , const char **) {
-    std::ifstream file("");
+int main(int argc, const char **argv) {
+    if (argc < 2) {
+        fprintf(stderr, "Usage: %s [source]\nFor example: %s ../example/case1.c\n", argv[0], argv[0]);
+        exit(-1);
+    }
+    std::ifstream file(argv[1]);
     ANTLRInputStream input(file);
     TLexer lexer(&input);
     CommonTokenStream tokens(&lexer);
