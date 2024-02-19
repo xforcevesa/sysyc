@@ -10,50 +10,33 @@ program     : (globalexpr | funcdef)+ EOF
 globalexpr  : decl SEMICOLON
             ;
 
-expr        : addexpr
+
+constexpr   : expr
             ;
 
-cond        : lorexpr
+expr        : primaryexpr
+            | IDENT LP funcrparams* RP
+            | (ADD | SUB | LOGICNOT) expr
+            | expr (STAR | DIV | MOD) expr
+            | lval (INC | DEC)
+            | expr (ADD | SUB) expr
+            | expr (GT | LT | GE | LE) expr
+            | expr (EQ | NE) expr
+            | expr LAND expr
+            | expr LOR expr
+            | lval ASSIGN expr
+            ;
+
+cond        : expr
             ;
 
 lval        : IDENT (LB expr RB)*
+            | (INC | DEC) lval
             ;
 
 primaryexpr : LP expr RP
             | number
             | lval
-            ;
-
-unaryexpr   : primaryexpr
-            | IDENT LP funcrparams* RP
-            | (ADD | SUB | LOGICNOT) unaryexpr
-            ;
-
-mulexpr     : unaryexpr
-            | mulexpr (STAR | DIV | MOD) unaryexpr
-            ;
-
-addexpr     : mulexpr
-            | addexpr (ADD | SUB) mulexpr
-            ;
-
-relexpr     : addexpr
-            | relexpr (GT | LT | GE | LE) addexpr
-            ;
-
-eqexpr      : relexpr
-            | eqexpr (EQ | NE) relexpr
-            ;
-
-landexpr    : eqexpr
-            | landexpr LAND eqexpr
-            ;
-
-lorexpr     : landexpr
-            | lorexpr LOR landexpr
-            ;
-
-constexpr   : addexpr
             ;
 
 funcrparams : expr (COMMA expr)*

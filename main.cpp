@@ -20,11 +20,17 @@ using namespace antlrcpptest;
 using namespace antlr4;
 
 int main(int argc, const char **argv) {
+    std::cout << "sysyc version 0.1 by nomodeset" << std::endl;
     if (argc < 2) {
-        fprintf(stderr, "Usage: %s [source]\nFor example: %s ../example/case1.c\n", argv[0], argv[0]);
+        fprintf(stderr, "Usage: %s [source]\nFor "
+                        "example: %s ../example/case1.c\n", argv[0], argv[0]);
         exit(-1);
     }
     std::ifstream file(argv[1]);
+    if (!file.is_open()) {
+        fprintf(stderr, "File %s not found", argv[1]);
+        exit(-1);
+    }
     ANTLRInputStream input(file);
     TLexer lexer(&input);
     CommonTokenStream tokens(&lexer);
