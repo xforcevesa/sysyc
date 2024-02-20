@@ -31,7 +31,13 @@
 *.out
 *.app
 
+# IDE Config and Output Files
 cmake-build-debug
 gen
 build
 .idea
+.vscode
+*.tokens
+*.json
+.gen
+.antlr*

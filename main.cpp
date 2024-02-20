@@ -10,40 +10,9 @@
 //  Created by Mike Lischke on 13.03.16.
 //
 
-#include <iostream>
+#include "src/compiler.h"
 
-#include "antlr4-runtime.h"
-#include "TLexer.h"
-#include "TParser.h"
-
-using namespace antlrcpptest;
-using namespace antlr4;
-
-int main(int argc, const char **argv) {
-    std::cout << "sysyc version 0.1 by nomodeset" << std::endl;
-    if (argc < 2) {
-        fprintf(stderr, "Usage: %s [source]\nFor "
-                        "example: %s ../example/case1.c\n", argv[0], argv[0]);
-        exit(-1);
-    }
-    std::ifstream file(argv[1]);
-    if (!file.is_open()) {
-        fprintf(stderr, "File %s not found", argv[1]);
-        exit(-1);
-    }
-    ANTLRInputStream input(file);
-    TLexer lexer(&input);
-    CommonTokenStream tokens(&lexer);
-
-    tokens.fill();
-    for (auto token : tokens.getTokens()) {
-        std::cout << token->toString() << std::endl;
-    }
-
-    TParser parser(&tokens);
-    tree::ParseTree* tree = parser.program();
-
-    std::cout << tree->toStringTree(&parser) << std::endl << std::endl;
-
-    return 0;
+int main(const int argc, char **argv) {
+    const auto c = new compiler(argc, argv);
+    return c->exec();
 }

@@ -14,7 +14,9 @@ globalexpr  : decl SEMICOLON
 constexpr   : expr
             ;
 
-expr        : primaryexpr
+expr        : LP expr RP
+            | (DECINT | OCTINT | HEXINT | TFLOAT)
+            | lval
             | IDENT LP funcrparams* RP
             | (ADD | SUB | LOGICNOT) expr
             | expr (STAR | DIV | MOD) expr
@@ -34,18 +36,7 @@ lval        : IDENT (LB expr RB)*
             | (INC | DEC) lval
             ;
 
-primaryexpr : LP expr RP
-            | number
-            | lval
-            ;
-
 funcrparams : expr (COMMA expr)*
-            ;
-
-number      : DECINT
-            | OCTINT
-            | HEXINT
-            | TFLOAT
             ;
 
 btype       : INT
@@ -70,21 +61,21 @@ constdecl   : CONST btype constdef (COMMA constdef)*
 initval     : expr
             | LC (initval (COMMA initval)*)? RC
             ;
+
 vardef      : IDENT (LB constexpr RB)*
             | IDENT (LB constexpr RB)* ASSIGN initval
             ;
+
 vardecl     : btype vardef (COMMA vardef)*
             ;
+
 decl        : constdecl
             | vardecl
             ;
 
-blockitem   : decl SEMICOLON
-            | stmt
+block       : LC (decl SEMICOLON | stmt)* RC
             ;
 
-block       : LC blockitem* RC
-            ;
 stmt        : lval ASSIGN expr SEMICOLON
             | expr SEMICOLON
             | block
