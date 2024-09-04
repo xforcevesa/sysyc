@@ -1,0 +1,26 @@
+// src/arithmetic.lalrpop
+
+use std::str::FromStr; // Import the FromStr trait
+
+grammar;
+
+pub Arithmetic: i64 = {
+    <l:Term> "+" <r:Arithmetic> => l + r,
+    <l:Term> "-" <r:Arithmetic> => l - r,
+    Term,
+};
+
+Term: i64 = {
+    <l:Factor> "*" <r:Term> => l * r,
+    <l:Factor> "/" <r:Term> => l / r,
+    Factor,
+};
+
+Factor: i64 = {
+    Num,
+    "(" <x:Arithmetic> ")" => x,
+};
+
+Num: i64 = {
+    r"[0-9]+" => i64::from_str(<>).unwrap(),
+};

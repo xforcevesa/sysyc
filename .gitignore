@@ -1,6 +1,9 @@
 # Prerequisites
 *.d
 
+target/
+*.lock
+
 # Compiled Object files
 *.slo
 *.lo

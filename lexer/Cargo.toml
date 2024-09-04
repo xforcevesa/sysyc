@@ -1,0 +1,12 @@
+[package]
+name = "lexer"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+lalrpop = "0.19"
+lalrpop-util = "0.19"
+ordered-float = "2.0"
+
+[build-dependencies]
+lalrpop = "0.19"
