@@ -4,94 +4,115 @@ options {
 	tokenVocab = TLexer;
 }
 
-program     : (globalexpr | funcdef)+ EOF
-            ;
+program : (decl | funcDef)* EOF;
 
-globalexpr  : decl SEMICOLON
-            ;
+decl : constDecl | varDecl;
 
+constDecl : CONST bType constDef (COMMA constDef)* SEMICOLON ;
 
-constexpr   : expr
-            ;
+bType: INT | FLOAT;
 
-expr        : LP expr RP
-            | (DECINT | OCTINT | HEXINT | TFLOAT)
-            | lval
-            | IDENT LP funcrparams* RP
-            | (ADD | SUB | LOGICNOT) expr
-            | expr (STAR | DIV | MOD) expr
-            | lval (INC | DEC)
-            | expr (ADD | SUB) expr
-            | expr (GT | LT | GE | LE) expr
-            | expr (EQ | NE) expr
-            | expr LAND expr
-            | expr LOR expr
-            | lval ASSIGN expr
-            ;
+constDef : IDENT (LB constExp RB)* ASSIGN constInitVal;
 
-cond        : expr
-            ;
+constInitVal
+    : constExp # scalarConstInitVal
+    | LC (constInitVal (COMMA constInitVal)* )? RC # listConstInitVal
+    ;
 
-lval        : IDENT (LB expr RB)*
-            | (INC | DEC) lval
-            ;
+varDecl : bType varDef (COMMA varDef)* SEMICOLON;
 
-funcrparams : expr (COMMA expr)*
-            ;
+varDef
+    : IDENT (LB constExp RB)* # uninitVarDef
+    | IDENT (LB constExp RB)* ASSIGN initVal # initVarDef
+    ;
 
-btype       : INT
-            | FLOAT
-            ;
+initVal
+    : exp # scalarInitVal
+    | LC (initVal (COMMA initVal)* )? RC # listInitval
+    ;
 
-functype    : INT
-            | FLOAT
-            | VOID
-            ;
+funcDef : funcType IDENT LP (funcFParams)? RP block;
 
-constinitval: constexpr
-            | (LB constinitval (COMMA constinitval)* RB)*
-            ;
+funcType : VOID | INT | FLOAT;
 
-constdef    : IDENT (LB constexpr RB)* ASSIGN constinitval
-            ;
+funcFParams : funcFParam (COMMA funcFParam)*;
 
-constdecl   : CONST btype constdef (COMMA constdef)*
-            ;
+funcFParam : bType IDENT (LB RB (LB constExp RB)* )?;
 
-initval     : expr
-            | LC (initval (COMMA initval)*)? RC
-            ;
+block : LC (blockItem)* RC;
 
-vardef      : IDENT (LB constexpr RB)*
-            | IDENT (LB constexpr RB)* ASSIGN initval
-            ;
+blockItem : decl | stmt;
 
-vardecl     : btype vardef (COMMA vardef)*
-            ;
+stmt
+    : lVal ASSIGN exp SEMICOLON # assignment
+    | (exp)? SEMICOLON # expStmt
+    | block # blockStmt
+    | IF LP cond RP stmt # ifStmt1
+    | IF LP cond RP stmt ELSE stmt # ifStmt2
+    | WHILE LP cond RP stmt # whileStmt
+    | BREAK SEMICOLON # breakStmt
+    | CONTINUE SEMICOLON # continueStmt
+    | RETURN (exp)? SEMICOLON # returnStmt
+    ;
 
-decl        : constdecl
-            | vardecl
-            ;
+exp : addExp;
 
-block       : LC (decl SEMICOLON | stmt)* RC
-            ;
+cond : lOrExp;
 
-stmt        : lval ASSIGN expr SEMICOLON
-            | expr SEMICOLON
-            | block
-            | IF LP cond RP stmt (ELSE stmt)?
-            | WHILE LP cond RP stmt
-            | BREAK SEMICOLON
-            | CONTINUE SEMICOLON
-            | RETURN expr SEMICOLON
-            ;
+lVal : IDENT (RB exp LB)*;
 
-funcfparam  : btype IDENT (LB RB (LB expr RB)*)?
-            ;
+primaryExp
+    : LP exp RP # primaryExp1
+    | lVal # primaryExp2
+    | number # primaryExp3
+    ;
 
-funcfparams : funcfparam (COMMA funcfparam)*
-            ;
+number : DECINT | OCTINT | HEXINT | TFLOAT;
 
-funcdef     : functype IDENT LP (funcfparams)? RP block
-            ;
+unaryExp
+    : primaryExp # unary1
+    | IDENT LP (funcRParams)? RP # unary2
+    | unaryOp unaryExp # unary3
+    ;
 
+unaryOp : ADD | SUB | LOGICNOT;
+
+funcRParams : funcRParam (COMMA funcRParam)*;
+
+funcRParam
+    : exp # expAsRParam
+    | STRING # stringAsRParam
+    ;
+
+mulExp
+    : unaryExp # mul1
+    | mulExp (STAR | DIV | MOD) unaryExp # mul2
+    ;
+
+addExp
+    : mulExp # add1
+    | addExp (ADD | SUB) mulExp # add2
+    ;
+
+relExp
+    : addExp # rel1
+    | relExp (LT | GT | LE | GE) addExp # rel2
+    ;
+eqExp
+    : relExp # eq1
+    | eqExp (EQ | NE) relExp # eq2
+    ;
+
+lAndExp
+    : eqExp # lAnd1
+    | lAndExp LAND eqExp # lAnd2
+    ;
+
+lOrExp
+    : lAndExp # lOr1
+    | lOrExp LOR lAndExp # lOr2
+    ;
+
+constExp
+    : addExp
+    ;

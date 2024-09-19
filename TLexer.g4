@@ -43,7 +43,12 @@ DECINT  : [0-9]+;
 OCTINT  : '0' [0-7]+;
 HEXINT  : '0x' [0-9A-Fa-f]+;
 TFLOAT : [0-9]+ '.' [0-9]* | '.' [0-9]+ | [0-9]+ '.' [0-9]* [eE] [+-]? [0-9]+ | '.' [0-9]+ [eE] [+-]? [0-9]+;
+
 IDENT   : [a-zA-Z_][a-zA-Z_0-9]*;
+STRING : '"'(ESC|.)*?'"';
+
+ESC : '\\"'|'\\\\';
+
 WS      : [ \t\n\r]+ -> skip ;
 LINE_COMMENT: '//' ~[\r\n]* -> skip;
 COMMENT: '/*' .*? '*/' -> skip;

@@ -60,13 +60,13 @@ int compiler::exec() const {
     std::cout << tree->toStringTree(parser) << std::endl;
 
     // Initialize visitor to traverse the parse tree and generate IR
-    const auto visitor = new SysycFrontend::ParseTreeVisitor();
-    visitor->visit(tree);
+    // const auto visitor = new SysycFrontend::ParseTreeVisitor();
+    // visitor->visit(tree);
 
     // Release created objects
     delete lexer;
     delete parser;
-    delete visitor;
+    // delete visitor;
     delete lexer_error_listener;
     delete parser_error_listener;
 
